@@ -1,0 +1,76 @@
+NAME = cub3D
+CC = gcc
+RM = rm -f
+FLAGS = -Wall -Wextra -Werror
+
+LIBFTDIR = includes/libft/
+LIBFT_OBJ = includes/libft/includes/obj
+OBJ_DIR = obj/
+MLX_DIR = minilibx_macos
+MLX_LIB = $(MLX_DIR)/libmlx.a
+MLX_FLAGS = -L$(MLX_DIR) -lmlx -framework OpenGL -framework AppKit
+INCLUDES = -I$(MLX_DIR)
+
+SRC_1 = srcs/cub3d.c
+SRC_2 = srcs/errors/errors.c \
+	srcs/game/settings.c \
+	srcs/parsing/parsing.c \
+	srcs/parsing/parsing_map.c \
+	srcs/parsing/parsing_rgb.c \
+	srcs/parsing/verify_direction.c \
+	srcs/parsing/verify_map.c \
+	srcs/raycasting/raycasting_calcul.c \
+	srcs/raycasting/raycasting_calcul_bis.c \
+	srcs/raycasting/raycasting_draw.c \
+	srcs/raycasting/raycasting_init.c \
+	srcs/texturing/init_textures.c \
+	srcs/player/init_player_controls.c \
+	srcs/player/keys.c \
+	srcs/player/player_movement.c \
+	srcs/player/player_init_movement.c \
+	srcs/player/rotate.c \
+	srcs/utils/function_utils.c \
+	srcs/utils/parsing_utils.c \
+	srcs/ui/main_menu.c \
+	srcs/utils-mlx/function_mlx.c
+BONUS = srcs/bonus/minimap.c \
+	srcs/bonus/mouse_rotate.c
+
+OBJ_1 = $(patsubst %.c,$(OBJ_DIR)%.o,$(SRC_1))
+OBJ_2 = $(patsubst %.c,$(OBJ_DIR)%.o,$(SRC_2))
+BONUS_OBJ = $(patsubst %.c,$(OBJ_DIR)%.o,$(BONUS))
+
+INCLUDE = -L$(LIBFTDIR) -lft
+
+all: $(MLX_LIB) $(NAME)
+
+$(OBJ_DIR)%.o: %.c
+	@mkdir -p $(@D)
+	@$(CC) $(FLAGS) $(CFLAGS) $(INCLUDES) -c $< -o $@
+
+$(MLX_LIB):
+	@$(MAKE) -C $(MLX_DIR)
+
+$(NAME): $(OBJ_1) $(OBJ_2)
+	@$(MAKE) -C $(LIBFTDIR)
+	@$(CC) $(FLAGS) $(OBJ_1) $(OBJ_2) -o $(NAME) $(INCLUDE) $(MLX_FLAGS)
+
+bonus: CFLAGS += -DBONUS
+bonus: $(MLX_LIB) $(OBJ_1) $(OBJ_2) $(BONUS_OBJ)
+	@$(MAKE) -C $(LIBFTDIR)
+	@$(CC) $(FLAGS) $(OBJ_1) $(OBJ_2) $(BONUS_OBJ) -o $(NAME) $(INCLUDE) $(MLX_FLAGS)
+
+clean:
+	@$(RM) $(OBJ_1) $(OBJ_2) $(BONUS_OBJ)
+	@$(MAKE) -C $(LIBFTDIR) clean
+	@$(MAKE) -C $(MLX_DIR) clean
+	@rm -rf $(LIBFT_OBJ) $(OBJ_DIR)
+
+fclean: clean
+	@$(MAKE) -C $(LIBFTDIR) fclean
+	@$(RM) $(NAME)
+	@rm -rf $(LIBFT_OBJ) $(OBJ_DIR)
+
+re: fclean all
+
+.PHONY: all clean fclean re bonus
