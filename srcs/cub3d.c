@@ -18,6 +18,7 @@ void	ft_bonus(t_game *game)
 	if (BONUS_VALUE == 1)
 	{
 		mlx_mouse_move(game->p_mlx_window, game->mid_x, game->mid_y);
+		mlx_mouse_hide();
 		mlx_hook(game->p_mlx_window, 6, (1L << 6), mouse_move, game);
 	}
 }
